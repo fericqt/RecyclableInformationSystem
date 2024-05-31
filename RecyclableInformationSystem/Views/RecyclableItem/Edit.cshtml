@@ -1,0 +1,132 @@
+﻿
+@{
+    ViewBag.Title = "Edit";
+    Layout = "~/Views/RecyclableItem/_RecyclableItemPage.cshtml";
+}
+
+@model RecyclableInformationSystem.Models.RecyclableItemModelNew
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="#">List</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
+            <button class="btn btn-outline-success" type="button" onclick="history.back()">Go Back</button>
+
+            <a class="btn btn-outline-success" type="button" href="@Url.Action("Add", "RecyclableItem")">Add</a>
+        </div>
+    </div>
+</nav>
+
+div class="container-fluid">
+<div class="row">
+    <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
+        <div class="position-sticky pt-3">
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link" href="@Url.Action("List", "RecyclableItem")">
+                        Recyclable Items
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="@Url.Action("List", "RecyclableType")">
+                        Recyclable Types
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+        <h2 class="text-center mb-4">Recyclable Items Edit</h2>
+        <div class="card-body">
+            <form method="post" action="@Url.Action("EditData", "RecyclableItem")">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label for="Id" class="form-label">ID:</label>
+                            <input readonly type="number" class="form-control" id="Id" name="Id" value="@Model.RecyclableItem.Id" />
+                        </div>
+                        <div class="mb-3">
+                            <label for="RecyclableTypeId" class="form-label">Recyclable Type ID:</label>
+                            <select class="form-select" id="recyclableTypeDropdown" name="RecyclableTypeId" required>
+                                @foreach (var item in Model.ListItem)
+                                {
+                                    <option value="@item.Value" @(item.Value == @Model.RecyclableItem.RecyclableTypeId.ToString() ? "selected" : "")>@item.Text</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="Weight" class="form-label">Weight:</label>
+                            <input type="number" class="form-control" id="weight" name="Weight" value="@Model.RecyclableItem.Weight" required/>
+                        </div>
+                        <div class="mb-3">
+                            <label for="ComputedRate" class="form-label">Computed Rate:</label>
+                            <input type="text" class="form-control" id="computedRate" name="ComputedRate" value="@Model.RecyclableItem.ComputedRate" readonly required/>
+                        </div>
+                        <div class="mb-3">
+                            <label for="ItemDescription" class="form-label">Item Description:</label>
+                            <input type="text" class="form-control" id="ItemDescription" name="ItemDescription" value="@Model.RecyclableItem.ItemDescription" required/>
+                        </div>
+                    </div>
+                    <div class="card-footer text-end">
+                        <button type="submit" class="btn btn-primary">Save</button>
+                        <button type="reset" class="btn btn-secondary">Reset</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </main>
+</div>
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#weight').on('input', function () {
+            calculateComputedRate();
+        });
+        //
+        $('#recyclableTypeDropdown').change(function () {
+            calculateComputedRate();
+            getMinMaxKg();
+        });
+        //
+        function getMinMaxKg() {
+            var selectedId = $('#recyclableTypeDropdown').val();
+            $.ajax({
+                url: '@Url.Action("GetMaxMinKg", "RecyclableItem")',
+                type: 'POST',
+                data: { recyclableTypeId: selectedId },
+                success: function (result) {
+                    var maxKg = result.MaxKg;
+                    var minKg = result.MinKg;
+                    $('#weight').attr('min', minKg);
+                    $('#weight').attr('max', maxKg);
+                    //
+                    $('#weight').val(minKg);
+                }
+            });
+        }
+        //
+        function calculateComputedRate() {
+            var selectedId = $('#recyclableTypeDropdown').val();
+            var weight = $('#weight').val();
+
+            if (selectedId && weight) {
+                $.ajax({
+                    url: '@Url.Action("CalculateRate", "RecyclableItem")',
+                    type: 'POST',
+                    data: { recyclableTypeId: selectedId },
+                    success: function (result) {
+                        var computedRate = result.Rate * weight;
+                        $('#computedRate').val(computedRate);
+                    }
+                });
+            } else {
+                $('#computedRate').val('');
+            }
+        }
+    });
+</script>

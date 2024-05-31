@@ -1,0 +1,14 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Home/_HomePage.cshtml";
+}
+
+<div class="container vh-100 d-flex flex-column justify-content-center align-items-center">
+    <h1 class="mb-4">Welcome to the Recyclable Information System</h1>
+    <div class="d-flex flex-column gap-3">
+        <a href="@Url.Action("List", "RecyclableItem")" class="btn btn-primary btn-lg">Recyclable Item</a>
+        <a href="@Url.Action("List", "RecyclableType")" class="btn btn-secondary btn-lg">Recyclable Types</a>
+    </div>
+</div>
+

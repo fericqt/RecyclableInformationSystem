@@ -1,0 +1,98 @@
+﻿
+@{
+    ViewBag.Title = "List of Recyclable Items";
+    Layout = "~/Views/RecyclableItem/_RecyclableItemPage.cshtml";
+}
+
+@model List<RecyclableInformationSystem.Models.RecyclableItem>
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="#">List</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
+            <a class="btn btn-outline-success" type="button" href="@Url.Action("Add", "RecyclableItem")">Add</a>
+        </div>
+    </div>
+</nav>
+
+
+<div class="container-fluid">
+    <div class="row">
+        <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
+            <div class="position-sticky pt-3">
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link" href="@Url.Action("List", "RecyclableItem")">
+                            Recyclable Items
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="@Url.Action("List", "RecyclableType")">
+                            Recyclable Types
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+            <h2 class="text-center mb-4">Recyclable Items List</h2>
+            <table class="table table-striped table-hover">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>Recyclable Type</th>
+                        <th>Item Description</th>
+                        <th>MinKg</th>
+                        <th>MaxKg</th>
+                        <th>Weight</th>
+                        <th>Computed Rate</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>@item.RecyclableType.Type</td>
+                            <td>@item.ItemDescription</td>
+                            <td>@item.RecyclableType.MinKg</td>
+                            <td>@item.RecyclableType.MaxKg</td>
+                            <td>@item.Weight</td>
+                            <td>@item.ComputedRate</td>
+                            <td>
+                                <form action="@Url.Action("Edit", "RecyclableItem")" method="post" style="display:inline">
+                                    <input type="hidden" name="Id" value="@item.Id" />
+                                    <button type="submit" class="btn btn-primary btn-sm">Edit</button>
+                                </form>
+                                <form action="@Url.Action("DeleteData", "RecyclableItem")" method="post" onsubmit="return deleteData(this);" style="display:inline">
+                                    <input type="hidden" name="Id" value="@item.Id" />
+                                    <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </main>
+    </div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js" integrity="sha512-AA1Bzp5Q0K1KanKKmvN/4d3IRKVlv9PYgwFPvm32nPO6QS8yH1HO7LbgB1pgiOxPtfeg5zEn2ba64MUcqJx6CA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script>
+    function deleteData(form) {
+        swal({
+            title: "Are you sure to delete this data?",
+            text: "",
+            icon: "warning",
+            buttons: true,
+            dangerMode: true,
+        }).then((isOkay) => {
+            if (isOkay) {
+                form.submit();
+            }
+        });
+        return false;
+    }
+</script>
